@@ -81,7 +81,7 @@ public class ClientTripController : ControllerBase
         else
         {
             clientTrip = new() { IdClient = clientId, IdTrip = tripId, RegisteredAt = int.Parse(DateTime.Now.ToString("yyyyMMdd")), PaymentDate = null };
-            return this.clientTripService.InsertData(clientTrip) ? this.Created() : this.BadRequest("Failed to register client for the trip.");
+            return this.clientTripService.InsertData(clientTrip) != -1 ? this.Created() : this.BadRequest("Failed to register client for the trip.");
         }
     }
 

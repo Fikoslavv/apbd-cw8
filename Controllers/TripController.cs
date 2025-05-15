@@ -18,14 +18,14 @@ public class TripsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetTripsAsync() => await Task.Run(() => this.GetTrips());
+    public async Task<IActionResult> GetTripsAsync([FromQuery] IDictionary<string, string[]> filters) => await Task.Run(() => this.GetTrips(filters));
 
-    private IActionResult GetTrips()
+    private IActionResult GetTrips(IDictionary<string, string[]> filters)
     {
         var output = new LinkedList<object>();
         var countries = this.countryService.ToDictionary(c => c.IdCountry);
 
-        foreach (var trip in this.tripService)
+        foreach (var trip in this.tripService.GetData(filters))
         {
             output.AddLast
             (
@@ -48,7 +48,7 @@ public class TripsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostTripAsync(Trip trip) => await Task.Run(() => this.PostTrip(trip));
 
-    private IActionResult PostTrip(Trip trip) => this.tripService.InsertData(trip) ? this.Ok(new { trip.IdTrip }) : this.BadRequest("Failed to add the trip.");
+    private IActionResult PostTrip(Trip trip) => this.tripService.InsertData(trip) != -1 ? this.Ok(new { trip.IdTrip }) : this.BadRequest("Failed to add the trip.");
 
     [HttpDelete("/api/[controller]/trips/{id}")]
     public async Task<IActionResult> DeleteTripAsync(int id) => await Task.Run(() => this.DeleteTrip(id));
